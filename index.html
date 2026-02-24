@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AntiGravity Malware Scanner</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            color: #fff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        /* Ambient glowing orbs */
+        .orb {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(138,43,226,0.6) 0%, rgba(0,0,0,0) 70%);
+            z-index: 0;
+            animation: float 10s infinite ease-in-out;
+        }
+        .orb-1 { top: 10%; left: 15%; animation-delay: 0s; }
+        .orb-2 { bottom: 10%; right: 15%; background: radial-gradient(circle, rgba(0,212,255,0.4) 0%, rgba(0,0,0,0) 70%); animation-delay: -5s; }
+
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-30px) scale(1.1); }
+            100% { transform: translateY(0px) scale(1); }
+        }
+
+        /* Glassmorphism Container */
+        .glass-container {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            width: 100%;
+            max-width: 800px;
+            z-index: 1;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #00d2ff, #3a7bd5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 2rem;
+        }
+
+        /* Upload Zone */
+        .upload-zone {
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #00d2ff;
+            background: rgba(0, 210, 255, 0.05);
+        }
+
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: #00d2ff;
+            display: block;
+        }
+
+        .btn-scan {
+            display: block;
+            width: 100%;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            background: linear-gradient(90deg, #8A2BE2, #4B0082);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .btn-scan.active {
+            opacity: 1;
+            pointer-events: auto;
+            box-shadow: 0 4px 15px rgba(138, 43, 226, 0.4);
+        }
+
+        .btn-scan.active:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.6);
+        }
+
+        /* Results Section */
+        #results {
+            display: none;
+            margin-top: 2rem;
+            animation: fadeIn 0.5s forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .verdict-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .verdict-malware {
+            border-left: 5px solid #ff416c;
+            box-shadow: 0 0 20px rgba(255, 65, 108, 0.2);
+        }
+
+        .verdict-safe {
+            border-left: 5px solid #00b09b;
+            box-shadow: 0 0 20px rgba(0, 176, 155, 0.2);
+        }
+
+        .verdict-h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .verdict-malware .verdict-h2 { color: #ff416c; }
+        .verdict-safe .verdict-h2 { color: #00b09b; }
+
+        .confidence-bar-bg {
+            background: rgba(255,255,255,0.1);
+            height: 10px;
+            border-radius: 5px;
+            margin: 1rem 0;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .verdict-malware .confidence-fill { background: linear-gradient(90deg, #ff4b2b, #ff416c); }
+        .verdict-safe .confidence-fill { background: linear-gradient(90deg, #96c93d, #00b09b); }
+
+        /* Loader */
+        .loader {
+            display: none;
+            border: 4px solid rgba(255,255,255,0.1);
+            border-left-color: #00d2ff;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Features grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 10px;
+            margin-top: 1rem;
+        }
+
+        .feature-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #ddd;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .feature-item strong {
+            color: #fff;
+        }
+
+        #fileNameDisplay {
+            margin-top: 10px;
+            color: #00d2ff;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+
+    <div class="glass-container">
+        <h1>AntiGravity Scanner</h1>
+        <p class="subtitle">Next-Gen Hybrid Malware Detection</p>
+
+        <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
+            <span class="upload-icon">📁</span>
+            <p>Drag & Drop your executable file here</p>
+            <p style="font-size: 0.85rem; color: #aaa; margin-top: 5px;">or click to browse</p>
+            <input type="file" id="fileInput">
+            <div id="fileNameDisplay"></div>
+        </div>
+
+        <button class="btn-scan" id="scanBtn" onclick="uploadAndScan()">START DEEP SCAN</button>
+
+        <div class="loader" id="loader"></div>
+
+        <div id="results">
+            <!-- Verdict will be injected here -->
+        </div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+        const scanBtn = document.getElementById('scanBtn');
+        const resultsDiv = document.getElementById('results');
+        const loader = document.getElementById('loader');
+
+        let selectedFile = null;
+
+        // Drag & Drop Handlers
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            if (e.dataTransfer.files.length) {
+                handleFileSelection(e.dataTransfer.files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                handleFileSelection(e.target.files[0]);
+            }
+        });
+
+        function handleFileSelection(file) {
+            selectedFile = file;
+            fileNameDisplay.textContent = `Selected: ${file.name}`;
+            scanBtn.classList.add('active');
+            resultsDiv.style.display = 'none';
+        }
+
+        async function uploadAndScan() {
+            if (!selectedFile) return;
+
+            // UI updating
+            scanBtn.style.display = 'none';
+            loader.style.display = 'block';
+            resultsDiv.style.display = 'none';
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch('/scan', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    alert(data.error);
+                    resetUI();
+                    return;
+                }
+
+                displayResults(data);
+
+            } catch (err) {
+                console.error(err);
+                alert('Scan failed. Ensure backend is running.');
+                resetUI();
+            }
+        }
+
+        function displayResults(data) {
+            loader.style.display = 'none';
+            scanBtn.style.display = 'block';
+            
+            const isMalware = data.is_malicious;
+            const cardClass = isMalware ? 'verdict-malware' : 'verdict-safe';
+            const verdictText = isMalware ? 'MALICIOUS THREAT DETECTED' : 'FILE IS SAFE';
+            
+            // Format confidence (if safe, invert confidence conceptually for the bar)
+            const dnnConf = data.dnn_confidence;
+            const barWidth = isMalware ? (dnnConf * 100).toFixed(1) : ((1 - dnnConf) * 100).toFixed(1);
+            
+            let html = `
+                <div class="verdict-card ${cardClass}">
+                    <h2 class="verdict-h2">${verdictText}</h2>
+                    <p>File: ${data.filename}</p>
+                    <p style="margin-top: 10px; font-size: 0.9rem;">Model Confidence</p>
+                    <div class="confidence-bar-bg">
+                        <div class="confidence-fill" style="width: 0%" id="confFill"></div>
+                    </div>
+                    <p style="font-weight: bold;">${barWidth}%</p>
+                    ${data.heuristic_triggered ? '<p style="color:#ff416c; margin-top:5px; font-size:0.85rem;">⚠️ Flagged by 8+ Zero Feature Heuristic</p>' : ''}
+                </div>
+                <h3 style="margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 5px;">Extracted Context Features</h3>
+                <div class="features-grid">
+            `;
+
+            // Display top features
+            for (const [key, value] of Object.entries(data.extracted_features)) {
+                // Formatting huge numbers
+                let displayVal = value;
+                if (typeof value === 'number' && value > 1000) displayVal = value.toLocaleString();
+                if (typeof value === 'number' && value % 1 !== 0) displayVal = value.toFixed(2);
+                
+                html += `<div class="feature-item"><span>${key}</span> <strong>${displayVal}</strong></div>`;
+            }
+
+            html += `</div>`;
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.style.display = 'block';
+
+            // Animate bar
+            setTimeout(() => {
+                document.getElementById('confFill').style.width = barWidth + '%';
+            }, 100);
+        }
+
+        function resetUI() {
+            loader.style.display = 'none';
+            scanBtn.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
