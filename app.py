@@ -8,7 +8,7 @@ from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 import tensorflow as tf
 
-app = FastAPI(title="AntiGravity Scanner API")
+app = FastAPI(title="AURA Scanner API")
 
 # Configuration
 MODEL_PATH = "best_context_dnn.h5"

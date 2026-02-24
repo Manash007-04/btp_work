@@ -44,20 +44,41 @@ This module has been upgraded to a research-grade static feature extractor. It e
 - **PE-Specific Metrics**: Modular parsing of PE headers to extract section counts, DLL imports, and a **Suspicious API Ratio**.
 - **Derived Bio-metrics**: Advanced features like *suspicious density* (keywords/size) and *import density* (functions/sections).
 
-## Workflow
+## End-to-End Execution Guide
 
-1. **Step 1: Feature Extraction (Optional)**
-   Run `hybrid_feature_extractor.py` to generate the raw dataset from binaries.
-   
-2. **Step 2: Unified Detection & Training**
-   Open and run `malware_detection_pipeline.ipynb`. This will:
-   - Shuffle `btp2_malware_features.csv`.
-   - Train the DNN and baseline models.
-   - Apply the **8+ zero-feature heuristic**.
-   - Test accuracy on `apt1_features.csv`.
-   
-3. **Step 3: Review Results**
-   Check the generated visualizations and performance tables at the end of the notebook.
+Follow these steps to run the entire project from data extraction to launching the web interface.
+
+### Step 1: Feature Extraction
+To analyze raw PE binaries and extract the research-grade features (Metadata, Entropy, Regex, PE-Headers), run the feature extractor script:
+```bash
+python hybrid_feature_extractor.py
+```
+*Note: This generates the initial CSV datasets.*
+
+### Step 2: Unified Detection & Training
+Open and execute all cells in `malware_detection_pipeline.ipynb`. This notebook handles:
+- Data shuffling (producing `btp2_malware_features_shuffled.csv`).
+- Training the **Deep Neural Network (DNN)** and Baseline ML models.
+- Applying the **8+ zero-feature heuristic**.
+- Validating against the external `apt1_features.csv` dataset.
+
+### Step 3: Model Verification (Saved Assets)
+After training, the best performing models and scalers are automatically saved to your project directory. Ensure these files exist before starting the web server:
+- **`best_context_dnn.h5`**: The saved weights for the trained DNN model.
+- **`scaler_context.pkl`**: The serialized standard scaler used during training.
+
+### Step 4: Launching the AURA Scanner Web UI
+Once the models are saved, you can launch the real-time scanning web application.
+1. Ensure your environment has the required backend packages:
+   ```bash
+   pip install fastapi uvicorn python-multipart
+   ```
+2. Start the FastAPI backend server:
+   ```bash
+   python -m uvicorn app:app --host 127.0.0.1 --port 8000
+   ```
+3. Open a web browser and navigate to: [http://127.0.0.1:8000](http://127.0.0.1:8000)
+4. Use the premium Glassmorphism UI to drag-and-drop a file and receive instant malicious/safe verdicts based on our hybrid ML engine.
 
 ## Project Structure
 - `malware_detection_pipeline.ipynb`: The primary project engine.

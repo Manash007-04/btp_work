@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AntiGravity Malware Scanner</title>
+    <title>AURA Malware Scanner</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
 
@@ -31,17 +32,36 @@
             width: 300px;
             height: 300px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(138,43,226,0.6) 0%, rgba(0,0,0,0) 70%);
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.6) 0%, rgba(0, 0, 0, 0) 70%);
             z-index: 0;
             animation: float 10s infinite ease-in-out;
         }
-        .orb-1 { top: 10%; left: 15%; animation-delay: 0s; }
-        .orb-2 { bottom: 10%; right: 15%; background: radial-gradient(circle, rgba(0,212,255,0.4) 0%, rgba(0,0,0,0) 70%); animation-delay: -5s; }
+
+        .orb-1 {
+            top: 10%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .orb-2 {
+            bottom: 10%;
+            right: 15%;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.4) 0%, rgba(0, 0, 0, 0) 70%);
+            animation-delay: -5s;
+        }
 
         @keyframes float {
-            0% { transform: translateY(0px) scale(1); }
-            50% { transform: translateY(-30px) scale(1.1); }
-            100% { transform: translateY(0px) scale(1); }
+            0% {
+                transform: translateY(0px) scale(1);
+            }
+
+            50% {
+                transform: translateY(-30px) scale(1.1);
+            }
+
+            100% {
+                transform: translateY(0px) scale(1);
+            }
         }
 
         /* Glassmorphism Container */
@@ -83,12 +103,13 @@
             text-align: center;
             transition: all 0.3s ease;
             cursor: pointer;
-            background: rgba(0,0,0,0.2);
+            background: rgba(0, 0, 0, 0.2);
             position: relative;
             overflow: hidden;
         }
 
-        .upload-zone:hover, .upload-zone.dragover {
+        .upload-zone:hover,
+        .upload-zone.dragover {
             border-color: #00d2ff;
             background: rgba(0, 210, 255, 0.05);
         }
@@ -140,17 +161,24 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .verdict-card {
-            background: rgba(0,0,0,0.3);
+            background: rgba(0, 0, 0, 0.3);
             border-radius: 16px;
             padding: 2rem;
             text-align: center;
             margin-bottom: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         .verdict-malware {
@@ -168,11 +196,16 @@
             margin-bottom: 0.5rem;
         }
 
-        .verdict-malware .verdict-h2 { color: #ff416c; }
-        .verdict-safe .verdict-h2 { color: #00b09b; }
+        .verdict-malware .verdict-h2 {
+            color: #ff416c;
+        }
+
+        .verdict-safe .verdict-h2 {
+            color: #00b09b;
+        }
 
         .confidence-bar-bg {
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
             height: 10px;
             border-radius: 5px;
             margin: 1rem 0;
@@ -185,13 +218,18 @@
             transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .verdict-malware .confidence-fill { background: linear-gradient(90deg, #ff4b2b, #ff416c); }
-        .verdict-safe .confidence-fill { background: linear-gradient(90deg, #96c93d, #00b09b); }
+        .verdict-malware .confidence-fill {
+            background: linear-gradient(90deg, #ff4b2b, #ff416c);
+        }
+
+        .verdict-safe .confidence-fill {
+            background: linear-gradient(90deg, #96c93d, #00b09b);
+        }
 
         /* Loader */
         .loader {
             display: none;
-            border: 4px solid rgba(255,255,255,0.1);
+            border: 4px solid rgba(255, 255, 255, 0.1);
             border-left-color: #00d2ff;
             border-radius: 50%;
             width: 40px;
@@ -201,8 +239,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* Features grid */
@@ -214,7 +257,7 @@
         }
 
         .feature-item {
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             padding: 8px 12px;
             border-radius: 8px;
             font-size: 0.85rem;
@@ -234,13 +277,14 @@
         }
     </style>
 </head>
+
 <body>
 
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
 
     <div class="glass-container">
-        <h1>AntiGravity Scanner</h1>
+        <h1>AURA Scanner</h1>
         <p class="subtitle">Next-Gen Hybrid Malware Detection</p>
 
         <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
@@ -319,7 +363,7 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (data.error) {
                     alert(data.error);
                     resetUI();
@@ -338,15 +382,15 @@
         function displayResults(data) {
             loader.style.display = 'none';
             scanBtn.style.display = 'block';
-            
+
             const isMalware = data.is_malicious;
             const cardClass = isMalware ? 'verdict-malware' : 'verdict-safe';
             const verdictText = isMalware ? 'MALICIOUS THREAT DETECTED' : 'FILE IS SAFE';
-            
+
             // Format confidence (if safe, invert confidence conceptually for the bar)
             const dnnConf = data.dnn_confidence;
             const barWidth = isMalware ? (dnnConf * 100).toFixed(1) : ((1 - dnnConf) * 100).toFixed(1);
-            
+
             let html = `
                 <div class="verdict-card ${cardClass}">
                     <h2 class="verdict-h2">${verdictText}</h2>
@@ -368,7 +412,7 @@
                 let displayVal = value;
                 if (typeof value === 'number' && value > 1000) displayVal = value.toLocaleString();
                 if (typeof value === 'number' && value % 1 !== 0) displayVal = value.toFixed(2);
-                
+
                 html += `<div class="feature-item"><span>${key}</span> <strong>${displayVal}</strong></div>`;
             }
 
@@ -389,4 +433,5 @@
         }
     </script>
 </body>
+
 </html>
