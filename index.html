@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AURA Malware Scanner</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: 'Outfit', sans-serif;
+            font-family: 'Space Grotesk', sans-serif;
         }
 
         body {
@@ -118,11 +118,29 @@
             display: none;
         }
 
-        .upload-icon {
-            font-size: 3rem;
-            margin-bottom: 1rem;
-            color: #00d2ff;
-            display: block;
+        .scanner-line {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d2ff, transparent);
+            position: absolute;
+            top: 0;
+            left: 0;
+            animation: scan 3s infinite linear;
+            box-shadow: 0 0 15px #00d2ff;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0%;
+            }
+
+            50% {
+                top: 100%;
+            }
+
+            100% {
+                top: 0%;
+            }
         }
 
         .btn-scan {
@@ -285,12 +303,12 @@
 
     <div class="glass-container">
         <h1>AURA Scanner</h1>
-        <p class="subtitle">Next-Gen Hybrid Malware Detection</p>
+        <p class="subtitle">Next-Gen Hybrid Malware Detection System</p>
 
         <div class="upload-zone" id="dropZone" onclick="document.getElementById('fileInput').click()">
-            <span class="upload-icon">📁</span>
-            <p>Drag & Drop your executable file here</p>
-            <p style="font-size: 0.85rem; color: #aaa; margin-top: 5px;">or click to browse</p>
+            <div class="scanner-line"></div>
+            <p>Ready for Secure Analysis</p>
+            <p style="font-size: 0.85rem; color: #aaa; margin-top: 5px;">Drag & Drop or single click to select file</p>
             <input type="file" id="fileInput">
             <div id="fileNameDisplay"></div>
         </div>
